@@ -10,7 +10,9 @@ Copyright            = '(c) Masatoshi Higuchi. All rights reserved.'
 Description          = 'PowerShell module for Go Ethereum (geth)'
 PowerShellVersion    = '6.0'
 
-FunctionsToExport = @()
+FunctionsToExport = @(
+	'Start-Client'
+)
 CmdletsToExport   = @()
 VariablesToExport = @()
 AliasesToExport   = @()
