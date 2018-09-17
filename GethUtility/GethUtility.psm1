@@ -31,3 +31,59 @@ function Start-Client {
 		Invoke-Expression $command
 	}
 }
+
+<#
+.SYNOPSIS
+	Returns $(geth help) output as Hashtable.
+#>
+function Get-HelpHashtable {
+	[hashtable]$help = @{ CategoryText = @{} }
+	[string[]]$helpLines = geth help
+	for ($i = 0; $i -lt $helpLines.Count; $i++) {
+		$line = $helpLines[$i].Trim()
+		switch -Regex ($line) {
+			'^[A-Z].*:$' {
+				$categoryText = $line.TrimEnd(':')
+				$category = (Get-Culture).TextInfo.ToTitleCase($categoryText.ToLower()) -replace ' ', ''
+				$help[$category] = @{}
+				$help['CategoryText'][$category] = $categoryText
+				break
+			}
+			'^-' {
+				$match = ($line | Select-String '^(?<Long>--[\w.]*)(\,\s)?(?<Short>(-\w)?)\s?(?<Argument>"?\w*"?)\s*(?<Description>.*)').Matches[0]
+				$help[$category][$match.Groups['Long'].Value.TrimStart('--')] = @{
+					Long        = $match.Groups['Long'].Value
+					Short       = $match.Groups['Short'].Value
+					Argument    = switch ($match.Groups['Argument'].Value) {
+						{ $_.Trim('"') -as [decimal] } { 'Decimal'; break }
+						{ $_ -match '\S+' } { 'String'; break }
+						Default { 'Switch'; break }
+					}
+					Description = $match.Groups['Description'].Value
+				}
+				break
+			}
+			'.+' {
+				if ($category -eq 'Commands') {
+					$match = ($line | Select-String '^(?<Command>[\w.]*)(\,\s)?(?<Short>\w?)\s*(?<Description>.*)').Matches[0]
+					$help[$category][$match.Groups['Command'].Value] = @{
+						Command     = $match.Groups['Command'].Value
+						Short       = $match.Groups['Short'].Value
+						Description = $match.Groups['Description'].Value
+					}
+				} else {
+					if ($help[$category]['Message']) {
+						$help[$category]['Message'] += "`n$line"
+					} else {
+						$help[$category]['Message'] = $line
+					}
+				}
+			}
+			Default {
+				Write-Debug ('Ignored Line [{0:D3}][{1}]' -f ($i + 1), $line)
+			}
+		}
+	}
+
+	$help
+}

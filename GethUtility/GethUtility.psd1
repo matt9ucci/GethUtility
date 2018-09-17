@@ -11,6 +11,7 @@ Description          = 'PowerShell module for Go Ethereum (geth)'
 PowerShellVersion    = '6.0'
 
 FunctionsToExport = @(
+	'Get-HelpHashtable'
 	'Start-Client'
 )
 CmdletsToExport   = @()
