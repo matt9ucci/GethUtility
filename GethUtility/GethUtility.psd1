@@ -12,6 +12,7 @@ PowerShellVersion    = '6.0'
 
 FunctionsToExport = @(
 	'Get-HelpHashtable'
+	'New-GenesisJson'
 	'Start-Client'
 )
 CmdletsToExport   = @()
