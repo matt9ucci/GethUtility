@@ -1,4 +1,11 @@
+[string]$DefaultDataDirectory = '.\GUData'
+
 <#
+.SYNOPSIS
+	Starts geth.
+.EXAMPLE
+	Start-Client
+	# Starts geth by using the GethUtility's default data directory (.\GUData)
 .EXAMPLE
 	Start-Client @{
 		datadir = "$HOME\GethTestData"
@@ -9,8 +16,12 @@
 function Start-Client {
 	[CmdletBinding(SupportsShouldProcess)]
 	param (
-		[hashtable]$Option
+		[hashtable]$Option = @{}
 	)
+
+	if (!$Option.ContainsKey('datadir')) {
+		$Option.Add('datadir', $DefaultDataDirectory)
+	}
 
 	$optionString = foreach ($key in $Option.Keys) {
 		if ($Option[$key] -eq $true) {
@@ -126,11 +137,11 @@ function New-GenesisJson {
 			eip158Block    = 0
 			byzantiumBlock = 0
 		}
-		difficulty = $Difficulty
-		gasLimit   = $GasLimit
+		difficulty = [string]$Difficulty
+		gasLimit   = [string]$GasLimit
 		mixHash = '0x{0}' -f $MixHash.PadLeft(64, '0')
 		nonce      = '0x{0:X16}' -f $Nonce
-		timestamp  = $Timestamp
+		timestamp  = [string]$Timestamp
 		alloc      = @{}
 	}
 
@@ -149,4 +160,13 @@ function New-GenesisJson {
 	}
 
 	$hashTable | ConvertTo-Json
+}
+
+function Initialize-DataDirectory {
+	param (
+		[string]$Directory = $DefaultDataDirectory,
+		[string]$GenesisPath = '.\genesis.json'
+	)
+
+	geth --datadir $Directory init $GenesisPath
 }
