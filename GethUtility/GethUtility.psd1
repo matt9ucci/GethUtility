@@ -13,6 +13,7 @@ PowerShellVersion    = '6.0'
 FunctionsToExport = @(
 	'Get-HelpHashtable'
 	'Initialize-DataDirectory'
+	'New-GenesisAlloc'
 	'New-GenesisJson'
 	'Start-Client'
 )

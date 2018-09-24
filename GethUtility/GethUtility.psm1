@@ -1,5 +1,6 @@
 . $PSScriptRoot\Enum.ps1
 . $PSScriptRoot\Private.ps1
+. $PSScriptRoot\Genesis.ps1
 
 [string]$DefaultDataDirectory = '.\GUData'
 
