@@ -24,7 +24,8 @@ function New-GenesisJson {
 		[Parameter(ParameterSetName = 'Clique')]
 		[uint64]$Period = 1,
 		[Parameter(ParameterSetName = 'Clique')]
-		[uint64]$Epoch = 30000
+		[uint64]$Epoch = 30000,
+		[hashtable[]]$Alloc
 	)
 
 	$hashTable = [ordered]@{
@@ -41,7 +42,6 @@ function New-GenesisJson {
 		mixHash    = '0x{0}' -f $MixHash.PadLeft(64, '0')
 		nonce      = '0x{0:X16}' -f $Nonce
 		timestamp  = [string]$Timestamp
-		alloc      = @{}
 	}
 
 	if ($Coinbase) {
@@ -56,6 +56,15 @@ function New-GenesisJson {
 		$hashTable.config.clique = [ordered]@{}
 		$hashTable.config.clique.period = $Period
 		$hashTable.config.clique.epoch = $Epoch
+	}
+
+	if ($Alloc) {
+		$hashTable.alloc = @{}
+		foreach ($a in $Alloc) {
+			foreach ($key in $a.Keys) {
+				$hashTable.alloc.Add($key, $a[$key])
+			}
+		}
 	}
 
 	$hashTable | ConvertTo-Json
