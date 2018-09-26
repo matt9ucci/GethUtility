@@ -77,20 +77,50 @@ function New-GenesisJson {
 	New-GenesisAlloc 1df62f291b2e969fb0849d99d9ce41e2f137006e
 .EXAMPLE
 	New-GenesisAlloc 1df62f291b2e969fb0849d99d9ce41e2f137006e 100 Ether
+.EXAMPLE
+	New-GenesisAlloc -BuiltIn Ganache
 #>
 function New-GenesisAlloc {
 	param (
-		[Parameter(Mandatory)]
-		[string]$Address,
+		[Parameter(ParameterSetName = 'Custom', Position = 0, Mandatory)]
+		[string[]]$Address,
+		[Parameter(ParameterSetName = 'Custom', Position = 1)]
 		[ValidateScript( { $_.Sign -ge 0 } )]
 		[bigint]$Balance = 0,
-		[EtherUnit]$Unit = [EtherUnit]::Wei
+		[Parameter(ParameterSetName = 'Custom', Position = 2)]
+		[EtherUnit]$Unit = [EtherUnit]::Wei,
+
+		[Parameter(ParameterSetName = 'BuiltIn')]
+		[ValidateSet('Ganache')]
+		[string]$BuiltIn
 	)
 
-	$hashTable = @{}
-	$hashTable[$Address] = @{
-		balance = [string](ConvertTo-Wei $Balance $Unit)
+	if ($PSCmdlet.ParameterSetName -eq 'BuiltIn') {
+		switch ($BuiltIn) {
+			Ganache {
+				$Address = @(
+					'90f8bf6a479f320ead074411a4b0e7944ea8c9c1'
+					'ffcf8fdee72ac11b5c542428b35eef5769c409f0'
+					'22d491bde2303f2f43325b2108d26f1eaba1e32b'
+					'e11ba2b4d45eaed5996cd0823791e0c93114882d'
+					'd03ea8624c8c5987235048901fb614fdca89b117'
+					'95ced938f7991cd0dfcb48f0a06a40fa1af46ebc'
+					'3e5e9111ae8eb78fe1cc3bb8915d5d461f3ef9a9'
+					'28a8746e75304c0780e011bed21c72cd78cd535e'
+					'aca94ef8bd5ffee41947b4585a84bda5a3d3da6e'
+					'1df62f291b2e969fb0849d99d9ce41e2f137006e'
+				)
+				$Balance = 100
+				$Unit = [EtherUnit]::Ether
+			}
+		}
 	}
 
+	$hashTable = @{}
+	foreach ($a in $Address) {
+		$hashTable[$a] = @{
+			balance = [string](ConvertTo-Wei $Balance $Unit)
+		}
+	}
 	$hashTable
 }
