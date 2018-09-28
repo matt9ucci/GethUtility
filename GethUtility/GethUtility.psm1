@@ -2,7 +2,21 @@
 . $PSScriptRoot\Private.ps1
 . $PSScriptRoot\Genesis.ps1
 
-[string]$DefaultDataDirectory = '.\GUData'
+$DefaultDataDirectory = '.\GUData'
+$StandardApi = @(
+	'db'
+	'eth'
+	'net'
+	'shh'
+	'web3'
+)
+$ManagementApi = @(
+	'admin'
+	'debug'
+	'miner'
+	'personal'
+	'txpool'
+)
 
 <#
 .SYNOPSIS
@@ -16,11 +30,20 @@
 		rpc = $true
 		rpcapi = 'db,eth,net,shh,web3'
 	}
+.EXAMPLE
+	Start-Client -Rpc Standard
+	# Enable HTTP-RPC APIs except for Management APIs
+.LINK
+	JSON RPC https://github.com/ethereum/wiki/wiki/JSON-RPC
+.LINK
+	Management APIs https://github.com/ethereum/go-ethereum/wiki/Management-APIs
 #>
 function Start-Client {
 	[CmdletBinding(SupportsShouldProcess)]
 	param (
-		[hashtable]$Option = @{}
+		[hashtable]$Option = [ordered]@{},
+		[ValidateSet('All', 'Default', 'Management', 'Standard')]
+		[string]$Rpc
 	)
 
 	if (!$Option.ContainsKey('datadir')) {
@@ -28,6 +51,20 @@ function Start-Client {
 	}
 	if (!$Option.ContainsKey('networkid')) {
 		$Option.Add('networkid', 1337)
+	}
+
+	if ($Rpc) {
+		if (!$Option.ContainsKey('rpc')) {
+			$Option.Add('rpc', $true)
+		}
+		if (!$Option.ContainsKey('rpcapi')) {
+			switch ($Rpc) {
+				'All' { $Option.Add('rpcapi', ($StandardApi + $ManagementApi) -join ',') }
+				'Default' { <# not specified #> }
+				'Management' { $Option.Add('rpcapi', $ManagementApi -join ',') }
+				'Standard' { $Option.Add('rpcapi', $StandardApi -join ',') }
+			}
+		}
 	}
 
 	$optionString = foreach ($key in $Option.Keys) {
