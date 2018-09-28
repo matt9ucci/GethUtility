@@ -26,6 +26,9 @@ function Start-Client {
 	if (!$Option.ContainsKey('datadir')) {
 		$Option.Add('datadir', $DefaultDataDirectory)
 	}
+	if (!$Option.ContainsKey('networkid')) {
+		$Option.Add('networkid', 1337)
+	}
 
 	$optionString = foreach ($key in $Option.Keys) {
 		if ($Option[$key] -eq $true) {
