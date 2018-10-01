@@ -89,6 +89,44 @@ function Start-Client {
 
 <#
 .SYNOPSIS
+	Connects to geth.
+.EXAMPLE
+	Connect-Client
+	# Connects to geth over IPC
+.EXAMPLE
+	Connect-Client -Rpc
+.EXAMPLE
+	Connect-Client localhost 8545
+#>
+function Connect-Client {
+	[CmdletBinding(DefaultParameterSetName = 'Ipc', SupportsShouldProcess)]
+	param (
+		[Parameter(ParameterSetName = 'Ipc')]
+		[switch]$Ipc = $true,
+		[Parameter(ParameterSetName = 'Rpc')]
+		[switch]$Rpc = $true,
+		[Parameter(ParameterSetName = 'RpcCustom', Position = 0)]
+		[string]$RpcHost = 'localhost',
+		[Parameter(ParameterSetName = 'RpcCustom', Position = 1)]
+		[uint16]$RpcPort = 8545
+	)
+
+	$command = switch ($PSCmdlet.ParameterSetName) {
+		Ipc { if ($Ipc) { "geth attach ipc://./pipe/geth.ipc" } }
+		Rpc { if ($Rpc) { "geth attach rpc:http://localhost:8545" } }
+		RpcCustom { "geth attach rpc:http://${RpcHost}:$RpcPort" }
+	}
+
+	if ($WhatIfPreference) {
+		Write-Host ("[WhatIf] Invoking the command: {0}" -f $command)
+	} else {
+		Write-Host ("Invoking the command: {0}" -f $command)
+		Invoke-Expression $command
+	}
+}
+
+<#
+.SYNOPSIS
 	Returns $(geth help) output as Hashtable.
 #>
 function Get-HelpHashtable {
