@@ -16,6 +16,7 @@ FunctionsToExport = @(
 	'Initialize-DataDirectory'
 	'New-GenesisAlloc'
 	'New-GenesisJson'
+	'Save-DownloadList'
 	'Start-Client'
 )
 CmdletsToExport   = @()
