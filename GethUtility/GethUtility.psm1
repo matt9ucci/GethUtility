@@ -213,3 +213,22 @@ function Save-DownloadList {
 	$uri = 'https://gethstore.blob.core.windows.net/builds?restype=container&comp=list'
 	Invoke-WebRequest $uri -OutFile $Path -Verbose
 }
+
+<#
+.SYNOPSIS
+	Returns geth releases list as System.Xml.XmlElement.
+.PARAMETER NoCache
+	If specified, the function invokes Save-DownloadList and returns the response.
+	If not specified, the function returns the cache of Save-DownloadList
+#>
+function Get-DownloadList {
+	param (
+		[switch]$NoCache
+	)
+
+	if ($NoCache -or !(Test-Path $DownloadListPathDefault)) {
+		Save-DownloadList
+	}
+
+	[xml](Get-Content $DownloadListPathDefault) | Select-Xml -XPath '//Blob' | ForEach-Object Node
+}
