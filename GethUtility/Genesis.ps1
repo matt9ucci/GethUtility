@@ -22,6 +22,8 @@ function New-GenesisJson {
 		[uint64]$Nonce = 0x42,
 		[uint64]$Timestamp = (Get-Date -UFormat %s),
 		[Parameter(ParameterSetName = 'Clique')]
+		[switch]$Clique,
+		[Parameter(ParameterSetName = 'Clique')]
 		[uint64]$Period = 1,
 		[Parameter(ParameterSetName = 'Clique')]
 		[uint64]$Epoch = 30000,
