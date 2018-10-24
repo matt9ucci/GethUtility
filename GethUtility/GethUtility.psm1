@@ -190,3 +190,14 @@ function Initialize-DataDirectory {
 
 	geth --datadir $Directory init $GenesisPath
 }
+
+function Remove-DataDirectory {
+	[CmdletBinding(SupportsShouldProcess)]
+	param (
+		[string]$Directory = $DefaultDataDirectory
+	)
+
+	if ($PSCmdlet.ShouldProcess($Directory)) {
+		Remove-Item $Directory -Recurse -Force -Confirm:$false
+	}
+}

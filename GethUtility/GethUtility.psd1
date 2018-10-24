@@ -17,6 +17,7 @@ FunctionsToExport = @(
 	'Initialize-DataDirectory'
 	'New-GenesisAlloc'
 	'New-GenesisJson'
+	'Remove-DataDirectory'
 	'Save-DownloadList'
 	'Start-Client'
 )
