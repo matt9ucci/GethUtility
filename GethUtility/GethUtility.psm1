@@ -103,13 +103,20 @@ function Connect-Client {
 	[CmdletBinding(DefaultParameterSetName = 'Ipc', SupportsShouldProcess)]
 	param (
 		[Parameter(ParameterSetName = 'Ipc')]
-		[switch]$Ipc = $true,
+		[switch]
+		$Ipc,
+
 		[Parameter(ParameterSetName = 'Rpc')]
-		[switch]$Rpc = $true,
+		[switch]
+		$Rpc,
+
 		[Parameter(ParameterSetName = 'RpcCustom', Position = 0)]
-		[string]$RpcHost = 'localhost',
+		[string]
+		$RpcHost = 'localhost',
+
 		[Parameter(ParameterSetName = 'RpcCustom', Position = 1)]
-		[uint16]$RpcPort = 8545
+		[uint16]
+		$RpcPort = 8545
 	)
 
 	$command = switch ($PSCmdlet.ParameterSetName) {
