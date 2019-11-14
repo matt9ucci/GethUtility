@@ -31,12 +31,28 @@ function Save-DownloadList {
 #>
 function Get-DownloadList {
 	param (
-		[switch]$NoCache
+		[switch]$NoCache,
+		[switch]$Unstable,
+		[switch]$Asc,
+
+		[ValidateSet('darwin', 'linux', 'windows')]
+		[string]
+		$Os
 	)
 
 	if ($NoCache -or !(Test-Path $DownloadListPathDefault)) {
 		Save-DownloadList
 	}
 
-	[xml](Get-Content $DownloadListPathDefault) | Select-Xml -XPath '//Blob' | ForEach-Object Node
+	$result = [xml](Get-Content $DownloadListPathDefault) | Select-Xml -XPath '//Blob' | ForEach-Object Node
+	if (!$Unstable) {
+		$result = $result | Where-Object Name -NotLike "*-unstable-*"
+	}
+	if (!$Asc) {
+		$result = $result | Where-Object Name -NotLike "*.asc"
+	}
+	if ($Os) {
+		$result = $result | Where-Object Name -Like "*-${Os}-*"
+	}
+	$result
 }
