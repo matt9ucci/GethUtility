@@ -11,23 +11,46 @@
 function New-GenesisJson {
 	param (
 		[ValidateScript( { 0 -le $_ } )]
-		[long]$ChainId = 1337,
-		[string]$Coinbase,
+		[long]
+		$ChainId = 1337,
+
+		[string]
+		$Coinbase,
+
 		[ValidateScript( { 0x20000 -le $_ } )]
-		[long]$Difficulty = 0x20000,
-		[string]$ExtraData,
+		[long]
+		$Difficulty = 0x20000,
+
+		[string]
+		$ExtraData,
+
 		[ValidateScript( { 5000 -le $_ } )]
-		[uint64]$GasLimit = 4712388,
-		[string]$MixHash = 0,
-		[uint64]$Nonce = 0x42,
-		[uint64]$Timestamp = (Get-Date -UFormat %s),
+		[uint64]
+		$GasLimit = 4712388,
+
+		[string]
+		$MixHash = 0,
+
+		[uint64]
+		$Nonce = 0x42,
+
+		[uint64]
+		$Timestamp = (Get-Date -UFormat %s),
+
 		[Parameter(ParameterSetName = 'Clique')]
-		[switch]$Clique,
+		[switch]
+		$Clique,
+
 		[Parameter(ParameterSetName = 'Clique')]
-		[uint64]$Period = 1,
+		[uint64]
+		$Period = 1,
+
 		[Parameter(ParameterSetName = 'Clique')]
-		[uint64]$Epoch = 30000,
-		[hashtable[]]$Alloc
+		[uint64]
+		$Epoch = 30000,
+
+		[hashtable[]]
+		$Alloc
 	)
 
 	$hashTable = [ordered]@{
@@ -85,12 +108,17 @@ function New-GenesisJson {
 function New-GenesisAlloc {
 	param (
 		[Parameter(ParameterSetName = 'Custom', Position = 0, Mandatory)]
-		[string[]]$Address,
+		[string[]]
+		$Address,
+
 		[Parameter(ParameterSetName = 'Custom', Position = 1)]
 		[ValidateScript( { $_.Sign -ge 0 } )]
-		[bigint]$Balance = 0,
+		[bigint]
+		$Balance = 0,
+
 		[Parameter(ParameterSetName = 'Custom', Position = 2)]
-		[EtherUnit]$Unit = [EtherUnit]::Wei,
+		[EtherUnit]
+		$Unit = [EtherUnit]::Wei,
 
 		[Parameter(ParameterSetName = 'BuiltIn')]
 		[ValidateSet('Ganache')]
